@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "uptime-monitor-app",
+    "name": "UptimeMonitor",
     "slug": "uptime-monitor-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,10 +21,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anikesh.uptimemonitor"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ],
+    "scheme": "uptimemonitor"
   }
 }

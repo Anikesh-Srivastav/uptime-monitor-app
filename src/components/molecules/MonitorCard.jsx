@@ -11,7 +11,7 @@ const STATUS_COLORS = {
 
 export default function MonitorCard({ monitor, onPress }) {
   const { theme } = useTheme();
-  const dotColor = STATUS_COLORS[monitor.status] || theme.textMuted;
+  const dotColor = STATUS_COLORS[monitor.status?.toLowerCase()] || theme.textMuted;
   const borderLeft = dotColor;
 
   return (
@@ -32,14 +32,14 @@ export default function MonitorCard({ monitor, onPress }) {
         <View style={styles.statusRow}>
           <View style={[styles.dot, { backgroundColor: dotColor }]} />
           <Text style={[styles.statusText, { color: dotColor }]}>
-            {monitor.status.toUpperCase()}
+            {(monitor.status ?? 'unknown').toUpperCase()}
           </Text>
         </View>
       </View>
 
       <Text style={[styles.name, { color: theme.textPrimary }]}>{monitor.name}</Text>
       <Text style={[styles.meta, { color: theme.textSecondary }]}>
-        Last check: {monitor.lastCheck}
+        {monitor.url ?? monitor.name}
       </Text>
 
       <View style={styles.bottom}>
@@ -49,7 +49,7 @@ export default function MonitorCard({ monitor, onPress }) {
         {/* pointerEvents="none" prevents the SVG from absorbing the tap */}
         <View pointerEvents="none">
           <Sparkline
-            data={monitor.sparkline}
+            data={monitor.sparkline ?? []}
             width={120}
             height={32}
             color={theme.accent + 'BB'}

@@ -42,7 +42,7 @@ export default function MonitoredUrlsCard({ endpoints = [], selectedEndpointId, 
       </View>
 
       <View style={styles.list}>
-        {endpoints.map(endpoint => {
+        {endpoints.map((endpoint, index) => {
           const palette = statusColors[endpoint.status] || {
             bg: theme.accentLight,
             text: theme.accentText,
@@ -51,7 +51,7 @@ export default function MonitoredUrlsCard({ endpoints = [], selectedEndpointId, 
 
           return (
             <TouchableOpacity
-              key={endpoint.id}
+              key={endpoint.id ?? endpoint.monitoredUrlId ?? String(index)}
               activeOpacity={0.8}
               onPress={() => onSelectEndpoint(endpoint)}
               style={[

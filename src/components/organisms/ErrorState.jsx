@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/ThemeContext';
+import BackButton from '../atoms/BackButton';
 import { radius, spacing, typography } from '../../theme/tokens';
 
 /**
@@ -19,15 +21,22 @@ export default function ErrorState({
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
       {onBack && (
         <View style={[styles.header, { borderBottomColor: theme.border }]}>
-          <TouchableOpacity onPress={onBack} style={styles.backBtn} hitSlop={8}>
-            <Text style={[styles.backArrow, { color: theme.textPrimary }]}>‹</Text>
-          </TouchableOpacity>
+          <BackButton onPress={onBack} />
         </View>
       )}
 
       <View style={styles.body}>
         <View style={[styles.iconWrap, { backgroundColor: theme.dangerLight }]}>
-          <Text style={styles.icon}>⚠️</Text>
+          <Svg width={36} height={36} viewBox="0 0 24 24" fill="none">
+            <Path
+              d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke="#EF4444"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Path d="M12 9v4M12 17h.01" stroke="#EF4444" strokeWidth={2} strokeLinecap="round" />
+          </Svg>
         </View>
 
         <Text style={[styles.title, { color: theme.textPrimary }]}>{title}</Text>
@@ -47,8 +56,8 @@ export default function ErrorState({
         )}
 
         {onBack && (
-          <TouchableOpacity onPress={onBack} style={styles.backLink}>
-            <Text style={[styles.backLinkText, { color: theme.accentText }]}>← Go Back</Text>
+          <TouchableOpacity onPress={onBack} style={styles.backLink} activeOpacity={0.7}>
+            <Text style={[styles.backLinkText, { color: theme.accentText }]}>Go back</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -63,8 +72,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
   },
-  backBtn: { padding: 4, alignSelf: 'flex-start' },
-  backArrow: { fontSize: 28, fontWeight: '300', lineHeight: 32 },
   body: {
     flex: 1,
     alignItems: 'center',
@@ -80,7 +87,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing.sm,
   },
-  icon: { fontSize: 32 },
   title: { fontSize: typography.titleLg, fontWeight: '700', textAlign: 'center' },
   message: {
     fontSize: typography.bodyLg,

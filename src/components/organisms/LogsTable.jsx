@@ -1,10 +1,62 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Svg, { Path, Polyline } from 'react-native-svg';
 import { useTheme } from '../../theme/ThemeContext';
 import LogRow from '../molecules/LogRow';
 import { radius, spacing, typography } from '../../theme/tokens';
 
 const PAGE_SIZES = [10, 25, 50];
+
+function ChevronLeftIcon({ color }) {
+  return (
+    <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+      <Path d="M15 18l-6-6 6-6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+function ChevronRightIcon({ color }) {
+  return (
+    <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+      <Path d="M9 18l6-6-6-6" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+function SkipStartIcon({ color }) {
+  return (
+    <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+      <Polyline points="11 17 6 12 11 7" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M18 17l-5-5 5-5M6 7v10" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+function SkipEndIcon({ color }) {
+  return (
+    <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+      <Polyline points="13 17 18 12 13 7" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M6 17l5-5-5-5M18 7v10" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+function PaginationBtn({ onPress, disabled, theme, icon }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      activeOpacity={0.7}
+      style={[
+        styles.navBtn,
+        { borderColor: theme.border, backgroundColor: theme.surface },
+        disabled && { opacity: 0.3 },
+      ]}
+    >
+      <View pointerEvents="none">{icon}</View>
+    </TouchableOpacity>
+  );
+}
 
 export default function LogsTable({ logs }) {
   const { theme } = useTheme();
@@ -20,16 +72,20 @@ export default function LogsTable({ logs }) {
       <View style={styles.toolbar}>
         <View style={styles.titleRow}>
           <View style={[styles.logIcon, { backgroundColor: theme.textPrimary }]}>
-            <Text style={{ color: theme.surface, fontSize: 14 }}>≡</Text>
+            <View pointerEvents="none">
+              <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+                <Path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke={theme.surface} strokeWidth={2} strokeLinecap="round" />
+              </Svg>
+            </View>
           </View>
           <Text style={[styles.title, { color: theme.textPrimary }]}>DETAILED LOGS</Text>
         </View>
         <View style={styles.toolbarActions}>
           <TouchableOpacity style={[styles.toolBtn, { borderColor: theme.border }]}>
-            <Text style={[styles.toolBtnText, { color: theme.textSecondary }]}>↓ Export</Text>
+            <Text style={[styles.toolBtnText, { color: theme.textSecondary }]}>Export</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.toolBtn, { borderColor: theme.border }]}>
-            <Text style={[styles.toolBtnText, { color: theme.textSecondary }]}>≡ All Logs</Text>
+            <Text style={[styles.toolBtnText, { color: theme.textSecondary }]}>All Logs</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -61,8 +117,11 @@ export default function LogsTable({ logs }) {
             onPress={() => setShowSizePicker(s => !s)}
           >
             <Text style={[styles.sizeBtnText, { color: theme.textPrimary }]}>
-              Show {pageSize} ▾
+              Show {pageSize}
             </Text>
+            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none">
+              <Path d="M6 9l6 6 6-6" stroke={theme.textPrimary} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            </Svg>
           </TouchableOpacity>
           {showSizePicker && (
             <View style={[styles.sizePicker, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -81,25 +140,30 @@ export default function LogsTable({ logs }) {
       </View>
 
       <View style={styles.navBtns}>
-        {[
-          { label: '«', action: () => setPage(0), disabled: page === 0 },
-          { label: '‹', action: () => setPage(p => Math.max(0, p - 1)), disabled: page === 0 },
-          { label: '›', action: () => setPage(p => Math.min(totalPages - 1, p + 1)), disabled: page === totalPages - 1 },
-          { label: '»', action: () => setPage(totalPages - 1), disabled: page === totalPages - 1 },
-        ].map(({ label, action, disabled }) => (
-          <TouchableOpacity
-            key={label}
-            onPress={action}
-            disabled={disabled}
-            style={[
-              styles.navBtn,
-              { borderColor: theme.border, backgroundColor: theme.surface },
-              disabled && { opacity: 0.35 },
-            ]}
-          >
-            <Text style={[styles.navBtnText, { color: theme.textPrimary }]}>{label}</Text>
-          </TouchableOpacity>
-        ))}
+        <PaginationBtn
+          onPress={() => setPage(0)}
+          disabled={page === 0}
+          theme={theme}
+          icon={<SkipStartIcon color={theme.textPrimary} />}
+        />
+        <PaginationBtn
+          onPress={() => setPage(p => Math.max(0, p - 1))}
+          disabled={page === 0}
+          theme={theme}
+          icon={<ChevronLeftIcon color={theme.textPrimary} />}
+        />
+        <PaginationBtn
+          onPress={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+          disabled={page === totalPages - 1}
+          theme={theme}
+          icon={<ChevronRightIcon color={theme.textPrimary} />}
+        />
+        <PaginationBtn
+          onPress={() => setPage(totalPages - 1)}
+          disabled={page === totalPages - 1}
+          theme={theme}
+          icon={<SkipEndIcon color={theme.textPrimary} />}
+        />
       </View>
     </View>
   );
@@ -149,6 +213,9 @@ const styles = StyleSheet.create({
   pageInfo: { fontSize: typography.body },
   pageSizeContainer: { position: 'relative' },
   sizeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
@@ -185,5 +252,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  navBtnText: { fontSize: typography.bodyLg, fontWeight: '600' },
 });

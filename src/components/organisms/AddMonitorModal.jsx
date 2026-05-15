@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Platform } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/ThemeContext';
 import Input from '../atoms/Input';
 import PrimaryButton from '../atoms/PrimaryButton';
@@ -40,8 +41,16 @@ export default function AddMonitorModal({ visible, onClose, onAdd }) {
             <View style={[styles.sheet, shadow.lg, { backgroundColor: theme.surface }]}>
               <View style={styles.header}>
                 <Text style={[styles.title, { color: theme.textPrimary }]}>Add Website</Text>
-                <TouchableOpacity onPress={onClose} hitSlop={8} style={styles.closeBtn}>
-                  <Text style={[styles.closeIcon, { color: theme.textSecondary }]}>✕</Text>
+                <TouchableOpacity
+                  onPress={onClose}
+                  hitSlop={8}
+                  style={[styles.closeBtn, { backgroundColor: theme.surfaceSecondary, borderColor: theme.border }]}
+                >
+                  <View pointerEvents="none">
+                    <Svg width={14} height={14} viewBox="0 0 24 24" fill="none">
+                      <Path d="M18 6L6 18M6 6l12 12" stroke={theme.textSecondary} strokeWidth={2} strokeLinecap="round" />
+                    </Svg>
+                  </View>
                 </TouchableOpacity>
               </View>
 
@@ -122,8 +131,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   title: { fontSize: typography.titleLg, fontWeight: '700' },
-  closeBtn: { padding: 4 },
-  closeIcon: { fontSize: 18, fontWeight: '400' },
+  closeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   divider: { height: 1 },
   body: {
     padding: spacing.xl,

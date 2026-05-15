@@ -1,7 +1,8 @@
-import { View, Text, Switch, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Switch, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
 import ScreenLayout from '../components/templates/ScreenLayout';
 import { useTheme } from '../theme/ThemeContext';
+import { useAuth } from '../hooks/useAuth';
 import { radius, shadow, spacing, typography } from '../theme/tokens';
 
 // ── SVG Icons ────────────────────────────────────────────────────────────────
@@ -125,8 +126,20 @@ function SettingsRow({ iconBg, icon, title, subtitle, right, theme, danger }) {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
   const { theme, isDark, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sign out?',
+      'You will be signed out of this device.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign Out', style: 'destructive', onPress: logout },
+      ],
+    );
+  };
 
   return (
     <ScreenLayout>
@@ -177,17 +190,22 @@ export default function SettingsScreen() {
       {/* Account */}
       <Text style={[styles.groupLabel, { color: theme.textMuted }]}>ACCOUNT</Text>
       <View style={[styles.group, shadow.sm, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-        <TouchableOpacity activeOpacity={0.7}>
-          <SettingsRow theme={theme} iconBg="#8B5CF6" icon={<IcUser c="#fff" />}
-            title="Profile" subtitle="Manage your account" />
+        <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('UserProfile')}>
+          <SettingsRow
+            theme={theme}
+            iconBg="#8B5CF6"
+            icon={<IcUser c="#fff" />}
+            title={user?.name ?? 'Profile'}
+            subtitle={user?.email ?? 'Manage your account'}
+          />
         </TouchableOpacity>
         <View style={[styles.divider, { backgroundColor: theme.border }]} />
-        <TouchableOpacity activeOpacity={0.7}>
-          <SettingsRow theme={theme} iconBg="#F59E0B" icon={<IcKey c="#fff" />}
-            title="API Keys" subtitle="Manage integrations" />
+        <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Sessions')}>
+          <SettingsRow theme={theme} iconBg="#3B82F6" icon={<IcKey c="#fff" />}
+            title="Active Sessions" subtitle="Manage signed-in devices" />
         </TouchableOpacity>
         <View style={[styles.divider, { backgroundColor: theme.border }]} />
-        <TouchableOpacity activeOpacity={0.7}>
+        <TouchableOpacity activeOpacity={0.7} onPress={handleLogout}>
           <SettingsRow theme={theme} iconBg="#EF4444" icon={<IcLogOut c="#fff" />}
             title="Sign Out" danger />
         </TouchableOpacity>

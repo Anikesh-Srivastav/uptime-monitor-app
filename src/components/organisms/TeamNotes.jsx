@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../theme/ThemeContext';
 import NoteItem from '../molecules/NoteItem';
 import IconCircle from '../atoms/IconCircle';
@@ -29,7 +30,7 @@ export default function TeamNotes({ notes: initialNotes }) {
     <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
       <View style={styles.header}>
         <IconCircle size={36} backgroundColor={theme.accentLight}>
-          <Text style={{ fontSize: 16 }}>💬</Text>
+          <Text style={{ fontSize: 16, lineHeight: 20 }}>💬</Text>
         </IconCircle>
         <Text style={[styles.title, { color: theme.textPrimary }]}>INTERNAL TEAM NOTES</Text>
       </View>
@@ -58,7 +59,11 @@ export default function TeamNotes({ notes: initialNotes }) {
           disabled={!text.trim()}
           style={[styles.sendBtn, { backgroundColor: theme.accent, opacity: text.trim() ? 1 : 0.5 }]}
         >
-          <Text style={styles.sendIcon}>➤</Text>
+          <View pointerEvents="none">
+              <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+                <Path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#fff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+              </Svg>
+            </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -99,5 +104,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  sendIcon: { color: '#fff', fontSize: 14 },
 });

@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import BackButton from '../atoms/BackButton';
 import Skeleton from '../atoms/Skeleton';
 import { useTheme } from '../../theme/ThemeContext';
 import { NAV_HEIGHT, radius, spacing } from '../../theme/tokens';
@@ -87,9 +88,7 @@ export default function MonitorDetailSkeleton({ navigation }) {
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
       {/* Header skeleton mirrors the real header layout */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={8}>
-          <Text style={[styles.backArrow, { color: theme.textPrimary }]}>‹</Text>
-        </TouchableOpacity>
+        <BackButton onPress={() => navigation.goBack()} />
         <View style={{ flex: 1, gap: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Skeleton height={20} style={{ flex: 1 }} borderRadius={5} />
@@ -125,8 +124,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     gap: spacing.sm,
   },
-  backBtn: { padding: 4 },
-  backArrow: { fontSize: 28, fontWeight: '300', lineHeight: 32 },
   card: {
     borderRadius: radius.lg,
     borderWidth: 1,

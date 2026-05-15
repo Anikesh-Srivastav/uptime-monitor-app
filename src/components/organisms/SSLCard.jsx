@@ -12,7 +12,7 @@ export default function SSLCard({ ssl }) {
 
       <View style={styles.header}>
         <View style={[styles.iconBg, { backgroundColor: theme.successLight }]}>
-          <Text style={{ fontSize: 20 }}>🔒</Text>
+          <Text style={{ fontSize: 20, lineHeight: 24 }}>🔒</Text>
         </View>
         <View>
           <Text style={[styles.valid, { color: theme.successText }]}>Valid</Text>

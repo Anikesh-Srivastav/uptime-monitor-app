@@ -1,31 +1,24 @@
 import 'react-native-gesture-handler';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
-import AppNavigator from './src/navigation/AppNavigator';
+import AppProvider from './src/providers/AppProvider';
+import RootNavigator from './src/navigation/RootNavigator';
+import { useTheme } from './src/theme/ThemeContext';
 
+// AppContent lives inside AppProvider so it can access ThemeContext
 function AppContent() {
   const { theme } = useTheme();
   return (
     <>
       <StatusBar style={theme.statusBar} />
-      <AppNavigator />
+      <RootNavigator />
     </>
   );
 }
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <NavigationContainer>
-            <AppContent />
-          </NavigationContainer>
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 }

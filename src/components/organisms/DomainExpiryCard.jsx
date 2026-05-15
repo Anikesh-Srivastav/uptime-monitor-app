@@ -14,7 +14,7 @@ export default function DomainExpiryCard({ domain }) {
     <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
       <View style={styles.topRow}>
         <Text style={[styles.label, { color: theme.textMuted }]}>DOMAIN EXPIRY</Text>
-        <Text style={{ fontSize: 18, color: theme.textMuted }}>🌐</Text>
+        <Text style={{ fontSize: 18, lineHeight: 22 }}>🌐</Text>
       </View>
 
       <View style={styles.daysBlock}>

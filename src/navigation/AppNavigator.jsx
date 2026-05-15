@@ -8,6 +8,9 @@ import MonitorsScreen from '../screens/MonitorsScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import LogsScreen from '../screens/LogsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import SessionsScreen from '../screens/SessionsScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,17 +37,36 @@ function MonitorsStack() {
   );
 }
 
+function SettingsStack() {
+  return (
+    <Stack.Navigator screenOptions={STACK_OPTIONS}>
+      <Stack.Screen name="SettingsHome" component={SettingsScreen} />
+      <Stack.Screen name="Sessions" component={SessionsScreen} />
+      <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+    </Stack.Navigator>
+  );
+}
+
+// Initialises push notifications once the authenticated tree is mounted
+function PushNotificationInit() {
+  usePushNotifications();
+  return null;
+}
+
 export default function AppNavigator() {
   return (
-    <Tab.Navigator
-      tabBar={(props) => <BottomNavBar {...props} />}
-      screenOptions={{ headerShown: false }}
-    >
-      <Tab.Screen name="Dashboard" component={DashboardStack} />
-      <Tab.Screen name="Monitors" component={MonitorsStack} />
-      <Tab.Screen name="Analytics" component={AnalyticsScreen} />
-      <Tab.Screen name="Logs" component={LogsScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-    </Tab.Navigator>
+    <>
+      <PushNotificationInit />
+      <Tab.Navigator
+        tabBar={(props) => <BottomNavBar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tab.Screen name="Dashboard" component={DashboardStack} />
+        <Tab.Screen name="Monitors" component={MonitorsStack} />
+        <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+        <Tab.Screen name="Logs" component={LogsScreen} />
+        <Tab.Screen name="Settings" component={SettingsStack} />
+      </Tab.Navigator>
+    </>
   );
 }

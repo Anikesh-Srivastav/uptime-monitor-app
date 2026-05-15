@@ -27,22 +27,22 @@ function getGreeting() {
 
 export default function DashboardScreen({ navigation }) {
   const { theme } = useTheme();
-  const { monitors, loading, refreshing, error, refresh, addMonitor } = useMonitors();
+  const { monitors, loading, refreshing, error, refresh, addMonitor } = useMonitors({ pollEnabled: true });
   const [showModal, setShowModal] = useState(false);
 
   // Derived summary stats — recomputed only when the monitor list changes
   const stats = useMemo(() => {
-    if (!monitors?.length) return { totalUptime: 100, avgResponseTime: 0, activeIncidents: 0 };
+    if (!monitors?.length) return { totalUptime: null, avgResponseTime: null, activeIncidents: 0 };
+    const withUptime = monitors.filter(m => m.uptime24h != null);
     const withResponse = monitors.filter(m => m.responseTime != null);
     return {
-      totalUptime:
-        Math.round(
-          (monitors.reduce((s, m) => s + m.uptime24h, 0) / monitors.length) * 10,
-        ) / 10,
+      totalUptime: withUptime.length
+        ? Math.round((withUptime.reduce((s, m) => s + m.uptime24h, 0) / withUptime.length) * 10) / 10
+        : null,
       avgResponseTime: withResponse.length
         ? Math.round(withResponse.reduce((s, m) => s + m.responseTime, 0) / withResponse.length)
-        : 0,
-      activeIncidents: monitors.reduce((s, m) => s + m.incidents, 0),
+        : null,
+      activeIncidents: monitors.reduce((s, m) => s + (m.incidents ?? 0), 0),
     };
   }, [monitors]);
 
@@ -68,50 +68,10 @@ export default function DashboardScreen({ navigation }) {
   const handleCloseModal = useCallback(() => setShowModal(false), []);
 
   const handleAddMonitor = useCallback(
-    ({ url, paths = [] }) => {
+    ({ url }) => {
       const normalizedUrl = /^https?:\/\//.test(url) ? url : `https://${url}`;
-      const name = normalizedUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-      const endpointPaths = ['/', ...paths]
-        .map(path => {
-          if (!path || path === '/') return '/';
-          return `/${path.replace(/^\/+/, '').replace(/\/$/, '')}`;
-        })
-        .filter((path, index, array) => array.indexOf(path) === index);
-
-      const endpoints = endpointPaths.map((path, index) => ({
-        id: `local-endpoint-${Date.now()}-${index}`,
-        path,
-        url: path === '/' ? normalizedUrl : `${normalizedUrl.replace(/\/$/, '')}${path}`,
-        label: path === '/' ? 'Homepage' : path.replace('/', ''),
-        status: 'healthy',
-        lastCheck: 'just now',
-        interval: '1 min',
-        responseTime: null,
-        uptime24h: 100,
-        incidents: 0,
-        logs: [],
-      }));
-
-      addMonitor({
-        id: `local-${Date.now()}`,
-        name,
-        url: normalizedUrl,
-        status: 'healthy',
-        lastCheck: 'just now',
-        interval: '1 min',
-        responseTime: null,
-        uptime24h: 100,
-        incidents: 0,
-        sparkline: [],
-        uptimeHistory: [],
-        responseHistory: [],
-        ssl: null,
-        domain: null,
-        alerts: { configured: false, description: 'No alerts configured.' },
-        endpoints,
-        notes: [],
-        logs: [],
-      });
+      // Backend only needs baseUrl — it handles domain parsing and URL normalisation
+      addMonitor({ baseUrl: normalizedUrl });
     },
     [addMonitor],
   );
@@ -201,14 +161,14 @@ export default function DashboardScreen({ navigation }) {
         <View style={styles.statsRow}>
           <SummaryCard
             label="Uptime"
-            value={`${stats.totalUptime}%`}
+            value={stats.totalUptime != null ? `${stats.totalUptime}%` : '—'}
             subtitle="Live"
             subtitleColor={theme.successText}
             accentColor={theme.successText}
           />
           <SummaryCard
             label="Response"
-            value={stats.avgResponseTime ? `${stats.avgResponseTime}ms` : '—'}
+            value={stats.avgResponseTime != null ? `${stats.avgResponseTime}ms` : '—'}
             subtitle="Avg"
             accentColor={theme.accent}
           />
@@ -229,14 +189,14 @@ export default function DashboardScreen({ navigation }) {
         {monitors?.length ? (
           monitors.map(monitor => (
             <MonitorCard
-              key={monitor.id}
+              key={monitor._id ?? monitor.id}
               monitor={monitor}
-              onPress={() => handleMonitorPress(monitor.id)}
+              onPress={() => handleMonitorPress(monitor._id ?? monitor.id)}
             />
           ))
         ) : (
           <View style={[styles.emptyState, { borderColor: theme.border }]}>
-            <Text style={{ fontSize: 32 }}>📡</Text>
+            <Text style={{ fontSize: 32, lineHeight: 40 }}>📡</Text>
             <Text style={[styles.emptyTitle, { color: theme.textPrimary }]}>
               No monitors yet
             </Text>

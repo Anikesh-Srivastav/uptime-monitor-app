@@ -1,40 +1,36 @@
 import { View, Text, StyleSheet } from 'react-native';
 import ScreenLayout from '../components/templates/ScreenLayout';
-import LogsTable from '../components/organisms/LogsTable';
 import { useTheme } from '../theme/ThemeContext';
-import { monitors } from '../data/mockMonitors';
-import { spacing, typography } from '../theme/tokens';
+import { radius, spacing, typography } from '../theme/tokens';
 
 export default function LogsScreen() {
   const { theme } = useTheme();
-  const allLogs = monitors.flatMap(m => m.logs || []).slice(0, 100);
 
   return (
     <ScreenLayout>
       <Text style={[styles.title, { color: theme.textPrimary }]}>Logs</Text>
 
-      <View style={styles.meta}>
-        <View style={[styles.pill, { backgroundColor: theme.accentLight }]}>
-          <Text style={[styles.pillText, { color: theme.accentText }]}>
-            {allLogs.length} entries
-          </Text>
-        </View>
-        <Text style={[styles.desc, { color: theme.textSecondary }]}>All monitors · Last 24 hours</Text>
+      <View style={[styles.coming, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        <Text style={styles.comingIcon}>📋</Text>
+        <Text style={[styles.comingTitle, { color: theme.textPrimary }]}>Logs coming soon</Text>
+        <Text style={[styles.comingDesc, { color: theme.textSecondary }]}>
+          Tap a monitor, then select an endpoint to view its detailed health check history.
+        </Text>
       </View>
-
-      <LogsTable logs={allLogs} />
     </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: typography.titleLg + 4, fontWeight: '800', marginBottom: spacing.md },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.lg },
-  pill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+  title: { fontSize: 32, fontWeight: '800', letterSpacing: -0.5, marginBottom: spacing.lg },
+  coming: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    padding: spacing.xl,
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  pillText: { fontSize: typography.small, fontWeight: '700' },
-  desc: { fontSize: typography.small },
+  comingIcon: { fontSize: 32, lineHeight: 40 },
+  comingTitle: { fontSize: typography.subtitle, fontWeight: '700' },
+  comingDesc: { fontSize: typography.body, textAlign: 'center', lineHeight: 20, maxWidth: 280 },
 });
